@@ -1,0 +1,279 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guccinet Logistics | ระบบติดตามสถานะการจัดส่งอัจฉริยะ</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <style>
+        body {
+            background: radial-gradient(circle at top right, #131b2c 0%, #0a0a0a 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 5%;
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #3b82f6; /* Blue color for Logistics */
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(59, 130, 246, 0.2);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--text-primary);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Dashboard Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            padding: 1.5rem;
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 0.5rem 0 0.2rem 0;
+            color: var(--text-primary);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .stat-icon {
+            position: absolute;
+            right: 1.5rem;
+            top: 1.5rem;
+            font-size: 1.8rem;
+            opacity: 0.3;
+        }
+
+        /* Tables section */
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0 0 1.5rem 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .dashboard-card {
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .data-table th {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .data-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(38, 38, 38, 0.5);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .data-table tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .badge {
+            padding: 0.2rem 0.6rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-blue { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+        .badge-success { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+        .badge-warning { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+        .badge-danger { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+
+    </style>
+</head>
+<body>
+
+    <!-- Header / Navbar -->
+    <header class="navbar">
+        <div class="logo">GUCCINET LOGISTICS</div>
+        <nav class="nav-links">
+            <a href="/sales/">หน้าเว็บระบบขาย</a>
+            <a href="/inventory/">ระบบคลังสินค้า (WMS)</a>
+            <a href="/marketing/">ระบบการตลาด</a>
+            <a href="#" class="active">ระบบขนส่ง</a>
+        </nav>
+    </header>
+
+    <!-- Main Container -->
+    <main class="container">
+        
+        <h2 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 1.5rem; color: #3b82f6;">แผงควบคุมระบบจัดส่งสินค้า (Logistics & Delivery)</h2>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card glass-card">
+                <span class="stat-icon" style="color: #3b82f6;">🚚</span>
+                <div class="stat-label">รายการจัดส่งทั้งหมด</div>
+                <div class="stat-value">{{ total_deliveries }}</div>
+            </div>
+            <div class="stat-card glass-card">
+                <span class="stat-icon" style="color: #f59e0b;">📦</span>
+                <div class="stat-label">อยู่ระหว่างขนส่ง (In Transit)</div>
+                <div class="stat-value">{{ in_transit_count }}</div>
+            </div>
+            <div class="stat-card glass-card">
+                <span class="stat-icon" style="color: #10b981;">✅</span>
+                <div class="stat-label">จัดส่งสำเร็จแล้ว</div>
+                <div class="stat-value">{{ delivered_count }}</div>
+            </div>
+        </div>
+
+        <!-- Active Deliveries -->
+        <div class="dashboard-card glass-card">
+            <h3 class="card-title">
+                <span>🚚 รายการจัดส่งพัสดุและเลขติดตามสินค้า (Active Deliveries)</span>
+                <a href="/admin/logistics/delivery/" target="_blank" class="badge badge-blue" style="text-decoration: none;">+ จัดการการจัดส่ง</a>
+            </h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>เลขที่สั่งซื้อ</th>
+                        <th>ผู้รับ</th>
+                        <th>ผู้บริการขนส่ง</th>
+                        <th>เลขพัสดุ (Tracking Number)</th>
+                        <th>สถานะการนำส่ง</th>
+                        <th>อัปเดตล่าสุด</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for del in deliveries %}
+                        <tr>
+                            <td style="font-family: monospace; font-weight: 700;">{{ del.order.order_number }}</td>
+                            <td>
+                                <div style="font-weight: 600;">{{ del.recipient_name }}</div>
+                                <span style="font-size: 0.8rem; color: var(--text-secondary);">โทร: {{ del.recipient_phone }}</span>
+                            </td>
+                            <td><span class="badge badge-blue">{{ del.shipping_method.name }}</span></td>
+                            <td style="font-family: monospace; font-weight: 600; color: #3b82f6;">{{ del.tracking_number|default:"รอผู้นำส่งรับสินค้า" }}</td>
+                            <td>
+                                {% if del.status == 'pending' %}
+                                    <span class="badge badge-warning">รอการจัดส่ง</span>
+                                {% elif del.status == 'in_transit' %}
+                                    <span class="badge badge-blue">อยู่ระหว่างขนส่ง</span>
+                                {% elif del.status == 'delivered' %}
+                                    <span class="badge badge-success">จัดส่งสำเร็จ</span>
+                                {% elif del.status == 'failed' %}
+                                    <span class="badge badge-danger">ล้มเหลว</span>
+                                {% else %}
+                                    <span class="badge badge-warning">{{ del.get_status_display }}</span>
+                                {% endif %}
+                            </td>
+                            <td style="font-size: 0.85rem; color: var(--text-secondary);">{{ del.last_updated|date:"d M Y H:i" }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6" style="text-align: center; color: var(--text-secondary); padding: 2rem;">ไม่มีข้อมูลการจัดส่งพัสดุในระบบ</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Reverse Logistics / Returns -->
+        <div class="dashboard-card glass-card">
+            <h3 class="card-title">🔄 ประวัติการทำเรื่องเคลม/คืนสินค้า (Reverse Logistics)</h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>วันเวลา</th>
+                        <th>คำสั่งซื้อ</th>
+                        <th>เหตุผลการคืน</th>
+                        <th>เลขพัสดุส่งคืน</th>
+                        <th>สถานะดำเนินเรื่อง</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ret in returns %}
+                        <tr>
+                            <td style="font-size: 0.85rem; color: var(--text-secondary);">{{ ret.created_at|date:"d M Y" }}</td>
+                            <td style="font-family: monospace; font-weight: 600;">{{ ret.order.order_number }}</td>
+                            <td style="font-size: 0.9rem;">{{ ret.reason }}</td>
+                            <td style="font-family: monospace;">{{ ret.tracking_number|default:"-" }}</td>
+                            <td>
+                                {% if ret.status == 'pending' %}
+                                    <span class="badge badge-warning">รอตรวจสอบ</span>
+                                {% elif ret.status == 'approved' %}
+                                    <span class="badge badge-success">อนุมัติแล้ว</span>
+                                {% elif ret.status == 'rejected' %}
+                                    <span class="badge badge-danger">ปฏิเสธการเคลม</span>
+                                {% else %}
+                                    <span class="badge badge-blue">{{ ret.get_status_display }}</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: var(--text-secondary); padding: 2rem;">ไม่มีรายการขอคืนเงิน/คืนสินค้าเข้ามาในระบบ</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </main>
+
+</body>
+</html>

@@ -1,0 +1,322 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guccinet Marketing Hub | ระบบวิเคราะห์และวางแผนการตลาด</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <style>
+        body {
+            background: radial-gradient(circle at top right, #251b15 0%, #0a0a0a 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 5%;
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #d4af37; /* Gold color for Marketing */
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--text-primary);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Dashboard Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            padding: 1.5rem;
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 0.5rem 0 0.2rem 0;
+            color: var(--text-primary);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .stat-icon {
+            position: absolute;
+            right: 1.5rem;
+            top: 1.5rem;
+            font-size: 1.8rem;
+            opacity: 0.3;
+        }
+
+        /* Two Column Layout */
+        .two-columns {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        @media (max-width: 900px) {
+            .two-columns {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0 0 1.5rem 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .dashboard-card {
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .data-table th {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .data-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(38, 38, 38, 0.5);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .data-table tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .badge {
+            padding: 0.2rem 0.6rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-gold { background: rgba(212, 175, 55, 0.15); color: #d4af37; }
+        .badge-success { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+        .badge-danger { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+
+        .campaign-item {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            background: rgba(255, 255, 255, 0.01);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Header / Navbar -->
+    <header class="navbar">
+        <div class="logo">GUCCINET MARKETING</div>
+        <nav class="nav-links">
+            <a href="/sales/">หน้าเว็บระบบขาย</a>
+            <a href="/inventory/">ระบบคลังสินค้า (WMS)</a>
+            <a href="#" class="active">ระบบการตลาด</a>
+            <a href="/transportation/">ระบบขนส่ง</a>
+        </nav>
+    </header>
+
+    <!-- Main Container -->
+    <main class="container">
+        
+        <h2 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 1.5rem; color: #d4af37;">แผงวิเคราะห์และจัดการโปรโมชันการตลาด</h2>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card glass-card">
+                <span class="stat-icon" style="color: #d4af37;">📢</span>
+                <div class="stat-label">แคมเปญที่เปิดใช้งานอยู่</div>
+                <div class="stat-value">{{ active_campaigns }}</div>
+            </div>
+            <div class="stat-card glass-card">
+                <span class="stat-icon" style="color: #d4af37;">🎫</span>
+                <div class="stat-label">คูปองส่วนลดที่ใช้งานได้</div>
+                <div class="stat-value">{{ active_coupons }}</div>
+            </div>
+            <div class="stat-card glass-card">
+                <span class="stat-icon" style="color: #10b981;">🎯</span>
+                <div class="stat-label">อัตราแลกส่วนลดคูปองเฉลี่ย</div>
+                <div class="stat-value" style="color: #10b981;">88.5%</div>
+            </div>
+        </div>
+
+        <!-- Two Columns Section -->
+        <div class="two-columns">
+            
+            <!-- Campaigns & Coupons List -->
+            <div>
+                <!-- Active Campaigns -->
+                <div class="dashboard-card glass-card">
+                    <h3 class="card-title">
+                        <span>📢 แคมเปญโฆษณาและการตลาด (Active Campaigns)</span>
+                        <a href="/admin/marketing/campaign/" target="_blank" class="badge badge-gold" style="text-decoration: none;">+ เพิ่มแคมเปญ</a>
+                    </h3>
+                    {% for cmp in campaigns %}
+                        <div class="campaign-item">
+                            <div>
+                                <h4 style="margin: 0 0 0.5rem 0; font-size: 1.1rem; color: #d4af37;">{{ cmp.name }}</h4>
+                                <p style="margin: 0; font-size: 0.9rem; color: var(--text-secondary);">{{ cmp.description }}</p>
+                                <span style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-top: 0.5rem;">
+                                    ระยะเวลา: {{ cmp.start_date|date:"d M Y" }} - {{ cmp.end_date|date:"d M Y" }}
+                                </span>
+                            </div>
+                            <div>
+                                {% if cmp.is_active %}
+                                    <span class="badge badge-success">กำลังดำเนินการ</span>
+                                {% else %}
+                                    <span class="badge badge-danger">ปิดใช้งาน</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p style="text-align: center; color: var(--text-secondary); padding: 2rem;">ไม่มีข้อมูลแคมเปญในขณะนี้</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Coupons Table -->
+                <div class="dashboard-card glass-card">
+                    <h3 class="card-title">
+                        <span>🎫 คูปองและโปรโมชันโค้ด (Discount Coupons)</span>
+                        <a href="/admin/marketing/coupon/" target="_blank" class="badge badge-gold" style="text-decoration: none;">+ เพิ่มคูปอง</a>
+                    </h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>รหัสคูปอง</th>
+                                <th>ประเภท</th>
+                                <th>มูลค่าส่วนลด</th>
+                                <th>สิทธิ์คงเหลือ</th>
+                                <th>สถานะ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for coupon in coupons %}
+                                <tr>
+                                    <td style="font-family: monospace; font-weight: 700; color: #d4af37;">{{ coupon.code }}</td>
+                                    <td>{{ coupon.get_coupon_type_display }}</td>
+                                    <td style="font-weight: 700;">
+                                        {% if coupon.coupon_type == 'percentage' %}
+                                            {{ coupon.value|floatformat:0 }}%
+                                        {% else %}
+                                            ฿{{ coupon.value|floatformat:0 }}
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ coupon.used_count }} / {{ coupon.usage_limit }} ครั้ง</td>
+                                    <td>
+                                        {% if coupon.is_active %}
+                                            <span class="badge badge-success">พร้อมใช้งาน</span>
+                                        {% else %}
+                                            <span class="badge badge-danger">หมดอายุ</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="5" style="text-align: center; color: var(--text-secondary); padding: 2rem;">ไม่มีข้อมูลคูปองส่วนลดในขณะนี้</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Customer Loyalty Point Card -->
+            <div>
+                <div class="dashboard-card glass-card">
+                    <h3 class="card-title">🏆 อันดับแต้มสะสมสมาชิก (CRM Points)</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ลูกค้า</th>
+                                <th style="text-align: right;">แต้มปัจจุบัน</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pt in points %}
+                                <tr>
+                                    <td>
+                                        <div style="font-weight: 600;">{{ pt.customer.user.username }}</div>
+                                        <span style="font-size: 0.75rem; color: var(--text-muted);">{{ pt.customer.user.get_full_name|default:"General Client" }}</span>
+                                    </td>
+                                    <td style="text-align: right; font-weight: 700; color: #d4af37;">{{ pt.points }} pt</td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="2" style="text-align: center; color: var(--text-secondary); padding: 2rem;">ไม่มีข้อมูลคะแนนสะสมของลูกค้า</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+</html>
