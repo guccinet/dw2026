@@ -1,0 +1,380 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guccinet Storefront | แพลตฟอร์มช้อปปิ้งออนไลน์ระดับลักชัวรี</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <style>
+        /* Extra custom styles for Storefront */
+        body {
+            background: radial-gradient(circle at top right, #1f1a10 0%, #0a0a0a 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 5%;
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--text-primary);
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Hero Banner Section */
+        .hero-section {
+            padding: 3.5rem 3rem;
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .hero-badge {
+            background: linear-gradient(135deg, var(--accent) 0%, #b8962e 100%);
+            color: #000;
+            padding: 0.3rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: 50px;
+            width: fit-content;
+            margin-bottom: 1rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .hero-title {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin: 0 0 1rem 0;
+            background: linear-gradient(to right, #ffffff, #d4af37);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-desc {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 0 2rem 0;
+        }
+
+        /* Coupons Section */
+        .section-title {
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            border-left: 4px solid var(--accent);
+            padding-left: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .coupon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3.5rem;
+        }
+
+        .coupon-card {
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .coupon-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+        }
+
+        .coupon-code {
+            font-family: monospace;
+            font-size: 1.25rem;
+            color: var(--accent);
+            font-weight: 700;
+            background: rgba(212, 175, 55, 0.1);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            border: 1px dashed rgba(212, 175, 55, 0.3);
+        }
+
+        .coupon-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0.5rem 0 0.2rem 0;
+        }
+
+        .coupon-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Products Grid Section */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .product-card {
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            background: var(--bg-card);
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), 0 0 15px rgba(212, 175, 55, 0.1);
+            border-color: rgba(212, 175, 55, 0.3);
+        }
+
+        .product-img-wrapper {
+            background: linear-gradient(135deg, #181818 0%, #262626 100%);
+            height: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-img-placeholder {
+            font-size: 5rem;
+            opacity: 0.15;
+            color: var(--accent);
+        }
+
+        .product-info {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .product-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0 0 0.5rem 0;
+            color: var(--text-primary);
+        }
+
+        .product-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+            line-height: 1.5;
+        }
+
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .product-price {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--accent) 0%, #b8962e 100%);
+            color: #000;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: scale(1.03);
+            box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 3rem 0;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 5rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header / Navbar -->
+    <header class="navbar">
+        <div class="logo">GUCCINET</div>
+        <nav class="nav-links">
+            <a href="#" class="active">หน้าแรก</a>
+            <a href="#">สินค้า</a>
+            <a href="#">โปรโมชัน</a>
+            <a href="/admin/" target="_blank">ระบบหลังบ้าน (Admin)</a>
+        </nav>
+    </header>
+
+    <!-- Main Container -->
+    <main class="container">
+
+        <!-- Active Marketing Campaigns (Hero) -->
+        {% if campaigns %}
+            {% for campaign in campaigns %}
+                <section class="hero-section glass-card">
+                    <span class="hero-badge">Special Campaign</span>
+                    <h1 class="hero-title">{{ campaign.name }}</h1>
+                    <p class="hero-desc">{{ campaign.description }}</p>
+                    <div>
+                        <button class="btn">เข้าร่วมแคมเปญ</button>
+                    </div>
+                </section>
+            {% endfor %}
+        {% else %}
+            <!-- Fallback Hero -->
+            <section class="hero-section glass-card">
+                <span class="hero-badge">Welcome to Guccinet</span>
+                <h1 class="hero-title">Exclusive Luxury Catalog</h1>
+                <p class="hero-desc">สัมผัสประสบการณ์การช้อปปิ้งสินค้าลักชัวรีแบรนด์เนมระดับโลก พร้อมการจัดการสต็อกและขนส่งที่รวดเร็วแบบไร้รอยต่อ</p>
+                <div>
+                    <button class="btn">เลือกชมสินค้า</button>
+                </div>
+            </section>
+        {% endif %}
+
+        <!-- Active Discount Coupons -->
+        {% if coupons %}
+            <h2 class="section-title">คูปองพิเศษสำหรับคุณ</h2>
+            <div class="coupon-grid">
+                {% for coupon in coupons %}
+                    <div class="coupon-card glass-card">
+                        <div>
+                            <span class="coupon-code">{{ coupon.code }}</span>
+                            <div class="coupon-value">
+                                {% if coupon.coupon_type == 'percentage' %}
+                                    ลด {{ coupon.value|floatformat:0 }}%
+                                {% else %}
+                                    ลด {{ coupon.value|floatformat:0 }} บาท
+                                {% endif %}
+                            </div>
+                            <span class="coupon-desc">ซื้อขั้นต่ำ {{ coupon.min_purchase_amount|floatformat:0 }} บาท</span>
+                        </div>
+                        <div>
+                            <button class="btn" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="copyCoupon('{{ coupon.code }}')">คัดลอก</button>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Products Section -->
+        <h2 class="section-title">สินค้าแนะนำพิเศษ</h2>
+        <div class="product-grid">
+            {% for product in products %}
+                <div class="product-card">
+                    <div class="product-img-wrapper">
+                        <!-- Display icon or placeholder since we don't have images -->
+                        <span class="product-img-placeholder">✦</span>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">{{ product.name }}</h3>
+                        <p class="product-description">{{ product.description }}</p>
+                        <div class="product-footer">
+                            <div class="product-price">฿{{ product.price|floatformat:0 }}</div>
+                            <button class="btn">หยิบใส่ตะกร้า</button>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: var(--text-secondary);">
+                    ไม่มีสินค้าแสดงในขณะนี้
+                </div>
+            {% endfor %}
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 GUCCINET Platform. All rights reserved. Powered by Python & Django Framework.</p>
+    </footer>
+
+    <script>
+        function copyCoupon(code) {
+            navigator.clipboard.writeText(code).then(() => {
+                alert('คัดลอกรหัสคูปอง ' + code + ' เรียบร้อยแล้ว!');
+            }).catch(err => {
+                console.error('ไม่สามารถคัดลอกรหัสคูปองได้: ', err);
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,309 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guccinet WMS | ระบบจัดการคลังสินค้าอัจฉริยะ</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <style>
+        body {
+            background: radial-gradient(circle at top right, #131d1a 0%, #0a0a0a 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 5%;
+            border-bottom: 1px solid var(--border-color);
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #10b981; /* Green color for WMS */
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--text-primary);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Dashboard Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .stat-card {
+            padding: 1.5rem;
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin: 0.5rem 0 0.2rem 0;
+            color: var(--text-primary);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .stat-icon {
+            position: absolute;
+            right: 1.5rem;
+            top: 1.5rem;
+            font-size: 1.8rem;
+            opacity: 0.3;
+        }
+
+        /* Tables section */
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0 0 1.5rem 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .dashboard-card {
+            padding: 2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .data-table th {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .data-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(38, 38, 38, 0.5);
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .data-table tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* Stock Health Bar */
+        .progress-bar-container {
+            width: 120px;
+            background: #262626;
+            border-radius: 50px;
+            height: 8px;
+            overflow: hidden;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 50px;
+        }
+
+        .badge {
+            padding: 0.2rem 0.6rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-success { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+        .badge-warning { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+        .badge-danger { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+        .badge-info { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+
+    </style>
+</head>
+<body>
+
+    <!-- Header / Navbar -->
+    <header class="navbar">
+        <div class="logo">GUCCINET WMS</div>
+        <nav class="nav-links">
+            <a href="/sales/">หน้าเว็บระบบขาย</a>
+            <a href="#" class="active">ระบบคลังสินค้า (WMS)</a>
+            <a href="/marketing/">ระบบการตลาด</a>
+            <a href="/transportation/">ระบบขนส่ง</a>
+        </nav>
+    </header>
+
+    <!-- Main Container -->
+    <main class="container">
+        
+        <h2 style="font-size: 1.8rem; font-weight: 700; margin-bottom: 1.5rem; color: #10b981;">แผงควบคุมระบบคลังสินค้า</h2>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card glass-card">
+                <span class="stat-icon" style="color: #3b82f6;">📦</span>
+                <div class="stat-label">รายการสินค้าทั้งหมด (SKUs)</div>
+                <div class="stat-value">{{ total_skus }}</div>
+            </div>
+            <div class="stat-card glass-card">
+                <span class="stat-icon" style="color: #10b981;">📊</span>
+                <div class="stat-label">จำนวนสินค้าคงเหลือรวม</div>
+                <div class="stat-value">{{ total_items }}</div>
+            </div>
+            <div class="stat-card glass-card">
+                <span class="stat-icon" style="color: #ef4444;">⚠</span>
+                <div class="stat-label">สินค้าแจ้งเตือนสต็อกต่ำ</div>
+                <div class="stat-value" style="color: {% if low_stock_count > 0 %}#ef4444{% else %}var(--text-primary){% endif %};">{{ low_stock_count }}</div>
+            </div>
+        </div>
+
+        <!-- Inventory List Card -->
+        <div class="dashboard-card glass-card">
+            <h3 class="card-title">
+                <span>📋 รายการสินค้าและยอดคงเหลือในคลัง</span>
+                <a href="/admin/inventory/stock/" target="_blank" class="badge badge-success" style="text-decoration: none;">+ ปรับปรุงคลังสินค้า</a>
+            </h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>รหัส SKU</th>
+                        <th>ชื่อสินค้า</th>
+                        <th>ตำแหน่งจัดเก็บ</th>
+                        <th>เกณฑ์สั่งผลิตใหม่</th>
+                        <th>จำนวนในสต็อก</th>
+                        <th>สถานะสุขภาพสต็อก</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for stock in stocks %}
+                        <tr>
+                            <td style="font-family: monospace; font-weight: 600; color: #10b981;">{{ stock.sku.sku_code }}</td>
+                            <td>
+                                <div>{{ stock.sku.product.name }}</div>
+                                <span style="font-size: 0.8rem; color: var(--text-secondary);">
+                                    สี: {{ stock.sku.color|default:"-" }} / ไซส์: {{ stock.sku.size|default:"-" }}
+                                </span>
+                            </td>
+                            <td><span class="badge badge-info">{{ stock.location|default:"ไม่ระบุ" }}</span></td>
+                            <td>{{ stock.reorder_level }} ชิ้น</td>
+                            <td style="font-weight: 700;">{{ stock.quantity }} ชิ้น</td>
+                            <td>
+                                {% if stock.quantity <= 0 %}
+                                    <span class="progress-bar-container">
+                                        <span class="progress-bar" style="width: 0%; background: #ef4444;"></span>
+                                    </span>
+                                    <span class="badge badge-danger">หมดเกลี้ยง</span>
+                                {% elif stock.quantity <= stock.reorder_level %}
+                                    <span class="progress-bar-container">
+                                        <span class="progress-bar" style="width: 30%; background: #f59e0b;"></span>
+                                    </span>
+                                    <span class="badge badge-warning">สต็อกต่ำ</span>
+                                {% else %}
+                                    <span class="progress-bar-container">
+                                        <span class="progress-bar" style="width: 85%; background: #10b981;"></span>
+                                    </span>
+                                    <span class="badge badge-success">ปกติ</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6" style="text-align: center; color: var(--text-secondary); padding: 2rem;">ไม่มีข้อมูลสต็อกสินค้าคงคลัง</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Recent Adjustments Card -->
+        <div class="dashboard-card glass-card">
+            <h3 class="card-title">🕰 บันทึกประวัติความเคลื่อนไหวสินค้าล่าสุด (Stock Audit Log)</h3>
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>วันเวลาทำรายการ</th>
+                        <th>รหัส SKU</th>
+                        <th>ประเภทรายการ</th>
+                        <th>จำนวนปรับปรุง</th>
+                        <th>ผู้ดำเนินการ</th>
+                        <th>รายละเอียดเหตุผล</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for adj in adjustments %}
+                        <tr>
+                            <td style="font-size: 0.85rem; color: var(--text-secondary);">{{ adj.created_at|date:"d M Y H:i" }}</td>
+                            <td style="font-family: monospace;">{{ adj.sku.sku_code }}</td>
+                            <td>
+                                {% if adj.adjustment_type == 'inbound' %}
+                                    <span class="badge badge-success">นำเข้าคลัง</span>
+                                {% elif adj.adjustment_type == 'outbound' %}
+                                    <span class="badge badge-danger">จ่ายออก</span>
+                                {% elif adj.adjustment_type == 'audit' %}
+                                    <span class="badge badge-info">ปรับยอดบัญชี</span>
+                                {% elif adj.adjustment_type == 'damaged' %}
+                                    <span class="badge badge-warning" style="background: rgba(239,68,68,0.15); color:#ef4444;">เสียหาย</span>
+                                {% else %}
+                                    <span class="badge badge-info">{{ adj.get_adjustment_type_display }}</span>
+                                {% endif %}
+                            </td>
+                            <td style="font-weight: 700; color: {% if adj.quantity_changed >= 0 %}#10b981{% else %}#ef4444{% endif %};">
+                                {% if adj.quantity_changed >= 0 %}+{% endif %}{{ adj.quantity_changed }}
+                            </td>
+                            <td>{{ adj.user.username|default:"ระบบอัตโนมัติ" }}</td>
+                            <td style="font-size: 0.85rem; color: var(--text-secondary);">{{ adj.reason|default:"-" }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="6" style="text-align: center; color: var(--text-secondary); padding: 2rem;">ไม่มีบันทึกประวัติความเคลื่อนไหวของสต็อก</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </main>
+
+</body>
+</html>
